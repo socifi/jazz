@@ -35,7 +35,7 @@ func main() {
 
 Scheme specification is done via YAML string.
 
-It can be really something crazy like this!
+It can be something really crazy like this!
 
 ```golang
 var data = []byte(`
@@ -112,6 +112,8 @@ func main() {
 ```
 
 ### Step 3: Publish and/or consume messages
+
+You can process each queue in separate application or everything together like this:
 
 ```golang
 func main() {
