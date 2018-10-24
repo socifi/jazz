@@ -2,7 +2,9 @@
 
 Abstraction layer for quick and simple rabbitMQ connection, messaging and administration. Inspired by Jazz Jackrabbit and his eternal hatred towards slow turtles.
 
-![Jazz Jackrabbit](https://upload.wikimedia.org/wikipedia/en/b/b4/Jazz_Jackrabbit.jpg)
+<p align="center">
+    <img src="https://upload.wikimedia.org/wikipedia/en/b/b4/Jazz_Jackrabbit.jpg" alt="Jazz Jackrabbit"> 
+</p>
 
 
 ## Usage
@@ -138,3 +140,7 @@ func main() {
 	//...
 }
 ```
+
+## Notes
+
+<sub><sup>No copyright infringement intended. The name Jazz Jackrabbit and artwork of Jazz Jackrabbit is intelectual property of Epic MegaGames and was taken over from [wikipedia](https://en.wikipedia.org/wiki/File:Jazz_Jackrabbit.jpg)</sup></sub>

@@ -1,6 +1,7 @@
 package jazz
 
 import(
+	"time"
 	"fmt"
 	"testing"
 )
@@ -10,61 +11,61 @@ var dsn = "amqp://guest:guest@localhost:5672/"
 
 var data = []byte(`
 exchanges:
-  change:
+  exchange0:
     durable: true
     type: topic
-  change1:
+  exchange1:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key1"
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key2"
-  change2:
+  exchange2:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key3"
-      - exchange: "change1"
+      - exchange: "exchange1"
         key: "key2"
-  change3:
+  exchange3:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key4"
 queues:
+  queue0:
+    durable: true
+    bindings:
+      - exchange: "exchange0"
+        key: "key4"
   queue1:
     durable: true
     bindings:
-      - exchange: "change"
-        key: "key4"
+      - exchange: "exchange1"
+        key: "key2"
   queue2:
     durable: true
     bindings:
-      - exchange: "change1"
-        key: "key2"
+      - exchange: "exchange1"
+        key: "#"
   queue3:
     durable: true
     bindings:
-      - exchange: "change1"
+      - exchange: "exchange2"
         key: "#"
   queue4:
     durable: true
     bindings:
-      - exchange: "change2"
+      - exchange: "exchange3"
         key: "#"
   queue5:
     durable: true
     bindings:
-      - exchange: "change3"
-        key: "#"
-  queue6:
-    durable: true
-    bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "#"
 `)
 
@@ -85,7 +86,7 @@ func TestSchemeCreation(t *testing.T) {
 	}
 	err = c.DeleteScheme(data)
 	if err != nil {
-		t.Errorf("Could not create scheme: %v", err.Error())
+		t.Errorf("Could not delete scheme: %v", err.Error())
 		return
 	}
 	err = c.CreateScheme(data)
@@ -95,7 +96,7 @@ func TestSchemeCreation(t *testing.T) {
 	}
 	err = c.DeleteScheme(data)
 	if err != nil {
-		t.Errorf("Could not create scheme: %v", err.Error())
+		t.Errorf("Could not delete scheme: %v", err.Error())
 		return
 	}
 	c.Close()
@@ -117,16 +118,25 @@ func TestSendMessage(t *testing.T) {
 		fmt.Println(string(msg))
 	}
 
+	go c.ProcessQueue("queue0", f)
 	go c.ProcessQueue("queue1", f)
 	go c.ProcessQueue("queue2", f)
 	go c.ProcessQueue("queue3", f)
 	go c.ProcessQueue("queue4", f)
 	go c.ProcessQueue("queue5", f)
-	go c.ProcessQueue("queue6", f)
-	c.SendMessage("change", "key1", "Hello World!")
-	c.SendMessage("change", "key2", "Hello!")
-	c.SendMessage("change", "key3", "World!")
-	c.SendMessage("change", "key4", "Hi!")
-	c.SendMessage("change", "key5", "Again!")
+	c.SendMessage("exchange0", "key1", "Hello World!")
+	c.SendMessage("exchange0", "key2", "Hello!")
+	c.SendMessage("exchange0", "key3", "World!")
+	c.SendMessage("exchange0", "key4", "Hi!")
+	c.SendMessage("exchange0", "key5", "Again!")
+
+	time.Sleep(time.Second)
+
+	err = c.DeleteScheme(data)
+	if err != nil {
+		t.Errorf("Could not delete scheme: %v", err.Error())
+		return
+	}
+
 	c.Close()
 }
