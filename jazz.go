@@ -1,7 +1,6 @@
 package jazz
 
 import(
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"github.com/streadway/amqp"
 )
@@ -21,14 +20,12 @@ func Connect(dsn string) (*Connection, error) {
 func (c *Connection) CreateScheme(data []byte) (error) {
 	ch, err := c.c.Channel()
 	if err != nil {
-		fmt.Println("jsem tu!")
 		return err
 	}
 
 	s := Settings{}
 	err = yaml.Unmarshal(data, &s)
 	if err != nil {
-		fmt.Println("jsem tady!")
 		return err
 	}
 
@@ -67,7 +64,6 @@ func (c *Connection) CreateScheme(data []byte) (error) {
 	// Create bindings now that everything is setup
 	for name, e := range s.Exchanges {
 		for _, b := range e.Bindings {
-			fmt.Println(b.Exchange, b.Key)
 			err = ch.ExchangeBind(name, b.Key, b.Exchange, b.Nowait, nil)
 			if err != nil {
 				return err
