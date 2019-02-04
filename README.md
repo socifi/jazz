@@ -3,7 +3,7 @@
 Abstraction layer for quick and simple rabbitMQ connection, messaging and administration. Inspired by Jazz Jackrabbit and his eternal hatred towards slow turtles.
 
 <p align="center">
-    <img src="https://upload.wikimedia.org/wikipedia/en/b/b4/Jazz_Jackrabbit.jpg" alt="Jazz Jackrabbit"> 
+    <img src="https://upload.wikimedia.org/wikipedia/en/b/b4/Jazz_Jackrabbit.jpg" alt="Jazz Jackrabbit">
 </p>
 
 
@@ -35,81 +35,95 @@ func main() {
 
 ### Step 2: Create scheme
 
-Scheme specification is done via YAML string.
+Scheme specification is done via structure `Settings` which can be easily specified in YAML. So generally you need to decode YAML and then create all queues and exchanges
 
 It can be something really crazy like this!
 
 ```golang
 var data = []byte(`
 exchanges:
-  change:
+  exchange0:
     durable: true
     type: topic
-  change1:
+  exchange1:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key1"
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key2"
-  change2:
+  exchange2:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key3"
-      - exchange: "change1"
+      - exchange: "exchange1"
         key: "key2"
-  change3:
+  exchange3:
     durable: true
     type: topic
     bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "key4"
 queues:
+  queue0:
+    durable: true
+    bindings:
+      - exchange: "exchange0"
+        key: "key4"
   queue1:
     durable: true
     bindings:
-      - exchange: "change"
-        key: "key4"
+      - exchange: "exchange1"
+        key: "key2"
   queue2:
     durable: true
     bindings:
-      - exchange: "change1"
-        key: "key2"
+      - exchange: "exchange1"
+        key: "#"
   queue3:
     durable: true
     bindings:
-      - exchange: "change1"
+      - exchange: "exchange2"
         key: "#"
   queue4:
     durable: true
     bindings:
-      - exchange: "change2"
+      - exchange: "exchange3"
         key: "#"
   queue5:
     durable: true
     bindings:
-      - exchange: "change3"
-        key: "#"
-  queue6:
-    durable: true
-    bindings:
-      - exchange: "change"
+      - exchange: "exchange0"
         key: "#"
 `)
 
 func main() {
 	// ...
 
-	err = c.CreateScheme(data)
+	r := bytes.NewReader(data)
+	s, err := DecodeYaml(r)
+	if err != nil {
+		t.Errorf("Could not read YAML: %v", err.Error())
+		return
+	}
+
+	err = c.CreateScheme(s)
 	if err != nil {
 		t.Errorf("Could not create scheme: %v", err.Error())
 		return
 	}
 
 	//...
+
+	// Be nice and delete scheme.
+	err = c.DeleteScheme(s)
+	if err != nil {
+		t.Errorf("Could not delete scheme: %v", err.Error())
+		return
+	}
 }
 ```
 

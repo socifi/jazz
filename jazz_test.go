@@ -1,13 +1,13 @@
 package jazz
 
-import(
-	"time"
+import (
+	"bytes"
 	"fmt"
 	"testing"
+	"time"
 )
 
 var dsn = "amqp://guest:guest@localhost:5672/"
-
 
 var data = []byte(`
 exchanges:
@@ -84,17 +84,24 @@ func TestSchemeCreation(t *testing.T) {
 		t.Errorf("Could not connect to RabbitMQ: %v", err.Error())
 		return
 	}
-	err = c.DeleteScheme(data)
+	r := bytes.NewReader(data)
+	s, err := DecodeYaml(r)
+	if err != nil {
+		t.Errorf("Could not read YAML: %v", err.Error())
+		return
+	}
+
+	err = c.DeleteScheme(s)
 	if err != nil {
 		t.Errorf("Could not delete scheme: %v", err.Error())
 		return
 	}
-	err = c.CreateScheme(data)
+	err = c.CreateScheme(s)
 	if err != nil {
 		t.Errorf("Could not create scheme: %v", err.Error())
 		return
 	}
-	err = c.DeleteScheme(data)
+	err = c.DeleteScheme(s)
 	if err != nil {
 		t.Errorf("Could not delete scheme: %v", err.Error())
 		return
@@ -108,7 +115,15 @@ func TestSendMessage(t *testing.T) {
 		t.Errorf("Could not connect to RabbitMQ: %v", err.Error())
 		return
 	}
-	err = c.CreateScheme(data)
+
+	r := bytes.NewReader(data)
+	s, err := DecodeYaml(r)
+	if err != nil {
+		t.Errorf("Could not read YAML: %v", err.Error())
+		return
+	}
+
+	err = c.CreateScheme(s)
 	if err != nil {
 		t.Errorf("Could not create scheme: %v", err.Error())
 		return
@@ -132,7 +147,7 @@ func TestSendMessage(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	err = c.DeleteScheme(data)
+	err = c.DeleteScheme(s)
 	if err != nil {
 		t.Errorf("Could not delete scheme: %v", err.Error())
 		return

@@ -1,8 +1,9 @@
 package jazz
 
-import(
-	"gopkg.in/yaml.v2"
+import (
 	"github.com/streadway/amqp"
+	"gopkg.in/yaml.v2"
+	"io"
 )
 
 // Connection is a struct which holds all necessary data for RabbitMQ connection
@@ -19,16 +20,21 @@ func Connect(dsn string) (*Connection, error) {
 	return &Connection{conn}, nil
 }
 
-// CreateScheme creates all exchanges, queues and bindinges between them as specified in yaml string
-// TODO: Rewrite to io.reader
-func (c *Connection) CreateScheme(data []byte) (error) {
-	ch, err := c.c.Channel()
-	if err != nil {
-		return err
-	}
-
+func DecodeYaml(r io.Reader) (Settings, error) {
 	s := Settings{}
-	err = yaml.Unmarshal(data, &s)
+
+	dec := yaml.NewDecoder(r)
+
+	err := dec.Decode(&s)
+	if err != nil {
+		return s, err
+	}
+	return s, nil
+}
+
+// CreateScheme creates all exchanges, queues and bindinges between them as specified in yaml string
+func (c *Connection) CreateScheme(s Settings) error {
+	ch, err := c.c.Channel()
 	if err != nil {
 		return err
 	}
@@ -92,15 +98,8 @@ func (c *Connection) CreateScheme(data []byte) (error) {
 }
 
 // DeleteScheme deletes all queues and exchanges (together with bindings) as specified in yaml string
-// TODO: Rewrite to io.reader
-func (c *Connection) DeleteScheme(data []byte) (error) {
+func (c *Connection) DeleteScheme(s Settings) error {
 	ch, err := c.c.Channel()
-	if err != nil {
-		return err
-	}
-
-	s := Settings{}
-	err = yaml.Unmarshal(data, &s)
 	if err != nil {
 		return err
 	}
@@ -123,12 +122,12 @@ func (c *Connection) DeleteScheme(data []byte) (error) {
 }
 
 // Close closes connection to RabbitMQ
-func (c *Connection) Close() (error) {
+func (c *Connection) Close() error {
 	return c.c.Close()
 }
 
 // SendMessage publishes plain text message to an exchange with specific routing key
-func (c *Connection) SendMessage(ex, key, msg string) (error) {
+func (c *Connection) SendMessage(ex, key, msg string) error {
 	ch, err := c.c.Channel()
 	if err != nil {
 		return err
@@ -147,7 +146,7 @@ func (c *Connection) SendMessage(ex, key, msg string) (error) {
 }
 
 // SendMessage publishes byte blob message to an exchange with specific routing key
-func (c *Connection) SendBlob(ex, key string, msg []byte) (error) {
+func (c *Connection) SendBlob(ex, key string, msg []byte) error {
 	ch, err := c.c.Channel()
 	if err != nil {
 		return err
