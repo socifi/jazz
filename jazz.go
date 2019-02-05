@@ -20,6 +20,7 @@ func Connect(dsn string) (*Connection, error) {
 	return &Connection{conn}, nil
 }
 
+// DecodeYaml reads yaml with specification of all exchanges and queues from io.Reader
 func DecodeYaml(r io.Reader) (Settings, error) {
 	s := Settings{}
 
@@ -90,6 +91,9 @@ func (c *Connection) CreateScheme(s Settings) error {
 	for name, q := range s.Queues {
 		for _, b := range q.Bindings {
 			err = ch.QueueBind(name, b.Key, b.Exchange, b.Nowait, nil)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -104,14 +108,14 @@ func (c *Connection) DeleteScheme(s Settings) error {
 		return err
 	}
 
-	for name, _ := range s.Exchanges {
+	for name := range s.Exchanges {
 		err = ch.ExchangeDelete(name, false, false)
 		if err != nil {
 			return err
 		}
 	}
 
-	for name, _ := range s.Queues {
+	for name := range s.Queues {
 		_, err = ch.QueueDelete(name, false, false, false)
 		if err != nil {
 			return err
@@ -145,7 +149,7 @@ func (c *Connection) SendMessage(ex, key, msg string) error {
 	return ch.Close()
 }
 
-// SendMessage publishes byte blob message to an exchange with specific routing key
+// SendBlob publishes byte blob message to an exchange with specific routing key
 func (c *Connection) SendBlob(ex, key string, msg []byte) error {
 	ch, err := c.c.Channel()
 	if err != nil {

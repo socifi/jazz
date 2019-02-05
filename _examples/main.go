@@ -1,12 +1,11 @@
 package main
 
-import(
+import (
 	"fmt"
 	"github.com/socifi/jazz"
 )
 
 var dsn = "amqp://guest:guest@localhost:5672/"
-
 
 var data = []byte(`
 exchanges:
@@ -71,13 +70,13 @@ queues:
 func main() {
 	c, err := jazz.Connect(dsn)
 	if err != nil {
-		panic(fmt.Sprintf("Could not connect to RabbitMQ: %v",err.Error()))
+		panic(fmt.Sprintf("Could not connect to RabbitMQ: %v", err.Error()))
 	}
 
 	// Create scheme
 	err = c.CreateScheme(data)
 	if err != nil {
-		panic(fmt.Sprintf("Could not create scheme: %v",err.Error()))
+		panic(fmt.Sprintf("Could not create scheme: %v", err.Error()))
 	}
 
 	// Handler function
@@ -100,7 +99,7 @@ func main() {
 	// Be nice and clean up a little bit. Not advisable in production.
 	err = c.DeleteScheme(data)
 	if err != nil {
-		panic(fmt.Sprintf("Could not delete scheme: %v",err.Error()))
+		panic(fmt.Sprintf("Could not delete scheme: %v", err.Error()))
 	}
 	c.Close()
 }
