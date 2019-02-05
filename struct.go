@@ -11,8 +11,8 @@ type Exchange struct {
 
 type Binding struct {
 	Exchange string `yaml:"exchange"`
-	Key string      `yaml:"key"`
-	Nowait bool     `yaml:"nowait"`
+	Key      string `yaml:"key"`
+	Nowait   bool   `yaml:"nowait"`
 }
 
 type QueueSpec struct {

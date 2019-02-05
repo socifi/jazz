@@ -104,14 +104,14 @@ func (c *Connection) DeleteScheme(s Settings) error {
 		return err
 	}
 
-	for name, _ := range s.Exchanges {
+	for name := range s.Exchanges {
 		err = ch.ExchangeDelete(name, false, false)
 		if err != nil {
 			return err
 		}
 	}
 
-	for name, _ := range s.Queues {
+	for name := range s.Queues {
 		_, err = ch.QueueDelete(name, false, false, false)
 		if err != nil {
 			return err
