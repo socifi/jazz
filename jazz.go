@@ -20,6 +20,7 @@ func Connect(dsn string) (*Connection, error) {
 	return &Connection{conn}, nil
 }
 
+// DecodeYaml reads yaml with specification of all exchanges and queues from io.Reader
 func DecodeYaml(r io.Reader) (Settings, error) {
 	s := Settings{}
 
@@ -90,6 +91,9 @@ func (c *Connection) CreateScheme(s Settings) error {
 	for name, q := range s.Queues {
 		for _, b := range q.Bindings {
 			err = ch.QueueBind(name, b.Key, b.Exchange, b.Nowait, nil)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
