@@ -149,7 +149,7 @@ func (c *Connection) SendMessage(ex, key, msg string) error {
 	return ch.Close()
 }
 
-// SendMessage publishes byte blob message to an exchange with specific routing key
+// SendBlob publishes byte blob message to an exchange with specific routing key
 func (c *Connection) SendBlob(ex, key string, msg []byte) error {
 	ch, err := c.c.Channel()
 	if err != nil {
