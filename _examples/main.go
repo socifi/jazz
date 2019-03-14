@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/socifi/jazz"
 )
@@ -73,8 +74,13 @@ func main() {
 		panic(fmt.Sprintf("Could not connect to RabbitMQ: %v", err.Error()))
 	}
 
+	r := bytes.NewReader(data)
+	s, err := jazz.DecodeYaml(r)
+	if err != nil {
+		panic(fmt.Sprintf("Could not read YAML: %v", err.Error()))
+	}
 	// Create scheme
-	err = c.CreateScheme(data)
+	err = c.CreateScheme(s)
 	if err != nil {
 		panic(fmt.Sprintf("Could not create scheme: %v", err.Error()))
 	}
@@ -97,7 +103,7 @@ func main() {
 	c.SendMessage("exchange0", "key5", "Again!")
 
 	// Be nice and clean up a little bit. Not advisable in production.
-	err = c.DeleteScheme(data)
+	err = c.DeleteScheme(s)
 	if err != nil {
 		panic(fmt.Sprintf("Could not delete scheme: %v", err.Error()))
 	}
