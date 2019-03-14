@@ -145,11 +145,11 @@ func main() {
 	go c.ProcessQueue("queue4", f)
 	go c.ProcessQueue("queue5", f)
 	go c.ProcessQueue("queue6", f)
-	c.SendMessage("change", "key1", "Hello World!")
-	c.SendMessage("change", "key2", "Hello!")
-	c.SendMessage("change", "key3", "World!")
-	c.SendMessage("change", "key4", "Hi!")
-	c.SendMessage("change", "key5", "Again!")
+	c.SendMessage("exchange0", "key1", "Hello World!")
+	c.SendMessage("exchange0", "key2", "Hello!")
+	c.SendMessage("exchange0", "key3", "World!")
+	c.SendMessage("exchange0", "key4", "Hi!")
+	c.SendMessage("exchange0", "key5", "Again!")
 
 	//...
 }
