@@ -103,14 +103,14 @@ queues:
 func main() {
 	// ...
 
-	r := bytes.NewReader(data)
-	s, err := DecodeYaml(r)
+	reader := bytes.NewReader(data)
+	scheme, err := DecodeYaml(reader)
 	if err != nil {
 		t.Errorf("Could not read YAML: %v", err.Error())
 		return
 	}
 
-	err = c.CreateScheme(s)
+	err = c.CreateScheme(scheme)
 	if err != nil {
 		t.Errorf("Could not create scheme: %v", err.Error())
 		return
@@ -118,8 +118,8 @@ func main() {
 
 	//...
 
-	// Be nice and delete scheme.
-	err = c.DeleteScheme(s)
+	// Be nice and delete scheme (Not advisable in ).
+	err = c.DeleteScheme(scheme)
 	if err != nil {
 		t.Errorf("Could not delete scheme: %v", err.Error())
 		return

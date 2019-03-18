@@ -116,14 +116,14 @@ func TestSendMessage(t *testing.T) {
 		return
 	}
 
-	r := bytes.NewReader(data)
-	s, err := DecodeYaml(r)
+	reader := bytes.NewReader(data)
+	scheme, err := DecodeYaml(reader)
 	if err != nil {
 		t.Errorf("Could not read YAML: %v", err.Error())
 		return
 	}
 
-	err = c.CreateScheme(s)
+	err = c.CreateScheme(scheme)
 	if err != nil {
 		t.Errorf("Could not create scheme: %v", err.Error())
 		return
@@ -147,7 +147,7 @@ func TestSendMessage(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	err = c.DeleteScheme(s)
+	err = c.DeleteScheme(scheme)
 	if err != nil {
 		t.Errorf("Could not delete scheme: %v", err.Error())
 		return
