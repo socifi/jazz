@@ -1,0 +1,13 @@
+clusters:
+  local:
+    url: localhost
+    port: 5672
+contexts:
+  guest@local:
+    cluster: local
+    user: guest
+current-context: guest@local
+users:
+  guest:
+    user: guest
+    password: guest
