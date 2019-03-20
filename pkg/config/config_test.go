@@ -15,10 +15,14 @@ func TestConfig(t *testing.T) {
 	if err != nil {
 		panic(err.Error())
 	}
-	c.AddContext("admin@local", "local", "admin")
+	c.AddContext("admin@local", "remote", "admin")
 	c.AddUser("admin", "admin", "admin")
 	c.AddCluster("remote", "remote", 5672)
+
 	c.SwitchContext("admin@local")
+
+	c.Print()
+	fmt.Println(c.GetCurrentContextDsn())
 
 	fmt.Printf("%+v", c)
 }

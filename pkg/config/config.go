@@ -1,67 +1,12 @@
 // Config is package that takes care about configuration of clusters, their credentials and so on
 package config
 
-import (
-	"github.com/mitchellh/go-homedir"
-	"gopkg.in/yaml.v2"
-	"io"
-	"os"
-	"path/filepath"
-)
-
-// ParseConfig get configuration location and parses it's content
-func ParseConfig() (*Config, error) {
-	c, err := GetConfigHome()
-	if err != nil {
-		return nil, err
-	}
-	f, err := os.Open(filepath.Join(c, "config"))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	return Parse(f)
-}
-
-// GetConfigHome retrieves JAZZ_HOME
-func GetConfigHome() (string, error) {
-	jazz := os.Getenv("JAZZ_HOME")
-	if jazz == "" {
-		home, err := homedir.Dir()
-		if err != nil {
-			return "", err
-		}
-		jazz = filepath.Join(home, ".jazz")
-	}
-	return jazz, nil
-}
-
-// Parse parses yaml configuration from given io.Reader to Config structure
-func Parse(r io.Reader) (*Config, error) {
-	c := &Config{}
-	d := yaml.NewDecoder(r)
-	return c, d.Decode(c)
-}
-
-// SaveCofig saves configuration to JAZZ_HOME
-func (c Config) SaveCofig() error {
-	cfg, err := GetConfigHome()
-	if err != nil {
-		return err
-	}
-	f, err := os.Create(filepath.Join(cfg, "config"))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	return c.Save(f)
-}
-
-// Save saves configuration to given io.Writer
-func (c Config) Save(w io.Writer) error {
-	e := yaml.NewEncoder(w)
-	defer e.Close()
-	return e.Encode(c)
+// NewConfig creates new configuration structure
+func NewConfig() *Config {
+	contexts := map[string]Context{}
+	clusters := map[string]Cluster{}
+	users := map[string]User{}
+	return &Config{clusters, contexts, "", users}
 }
 
 // SwitchContext tries to switch to another existing context
