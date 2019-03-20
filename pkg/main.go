@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/socifi/jazz/jazz/cmd"
+import "github.com/socifi/jazz/pkg/cmd"
 
 func main() {
 	cmd.Execute()
