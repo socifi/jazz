@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ConfigCmd represents the config command
 var configListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List configuration of jazz",

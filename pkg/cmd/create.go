@@ -10,7 +10,6 @@ var (
 	wait       bool
 )
 
-// createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Creates new object in RabbitMQ",
