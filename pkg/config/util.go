@@ -19,7 +19,7 @@ func initConfig() {
 	defaultConfig.AddCluster("local", "localhost", 5672)
 	defaultConfig.AddUser("guest", "guest", "guest")
 	defaultConfig.AddContext("guest@local", "local", "guest")
-	defaultConfig.SwitchContext("guest@local")
+	defaultConfig.UseContext("guest@local")
 
 	defaultConfig.SaveCofig()
 }

@@ -10,9 +10,9 @@ func NewConfig() *Config {
 }
 
 // SwitchContext tries to switch to another existing context
-func (c *Config) SwitchContext(ctx string) error {
+func (c *Config) UseContext(ctx string) error {
 	if _, ok := c.Contexts[ctx]; !ok {
-		return NewTraverseError("Key does not exist", ctx)
+		return NewTraverseError("Context does not exist", ctx)
 	}
 	c.CurrentContext = ctx
 	return nil
@@ -21,7 +21,13 @@ func (c *Config) SwitchContext(ctx string) error {
 // AddContext tries to add new context
 func (c *Config) AddContext(name, cluster, user string) error {
 	if _, ok := c.Contexts[name]; ok {
-		return NewTraverseError("Key exists", name)
+		return NewTraverseError("Context already exists", name)
+	}
+	if _, ok := c.Users[user]; !ok {
+		return NewTraverseError("User does not exists", user)
+	}
+	if _, ok := c.Clusters[cluster]; !ok {
+		return NewTraverseError("Cluster does not exists", cluster)
 	}
 	ctx := Context{cluster, user}
 	c.Contexts[name] = ctx
@@ -29,9 +35,16 @@ func (c *Config) AddContext(name, cluster, user string) error {
 }
 
 // ChangeContext either adds or changes context to desired state
-func (c *Config) ChangeContext(name, cluster, user string) {
+func (c *Config) ChangeContext(name, cluster, user string) error {
+	if _, ok := c.Users[user]; !ok {
+		return NewTraverseError("User does not exists", user)
+	}
+	if _, ok := c.Clusters[cluster]; !ok {
+		return NewTraverseError("Cluster does not exists", cluster)
+	}
 	ctx := Context{cluster, user}
 	c.Contexts[name] = ctx
+	return nil
 }
 
 // RemoveContext removes a context
@@ -42,7 +55,7 @@ func (c *Config) RemoveContext(name string) {
 // AddUser tries to add new user
 func (c *Config) AddUser(name, user, password string) error {
 	if _, ok := c.Users[name]; ok {
-		return NewTraverseError("Key exists", name)
+		return NewTraverseError("User already exists", name)
 	}
 	u := User{user, password}
 	c.Users[name] = u
